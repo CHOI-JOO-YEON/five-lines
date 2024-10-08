@@ -400,8 +400,8 @@ function moveVertical(dy: number) {
 }
 
 function update() {
-    handleInputs();
-    updateMap();
+  handleInputs();
+  updateMap();
 }
 
 
@@ -437,6 +437,22 @@ function updateTile(x: number, y: number) {
     }
 }
 
+function updateTile(x: number, y: number) {
+  if ((map[y][x] === Tile.STONE || map[y][x] === Tile.FALLING_STONE)
+      && map[y + 1][x] === Tile.AIR) {
+    map[y + 1][x] = Tile.FALLING_STONE;
+    map[y][x] = Tile.AIR;
+  } else if ((map[y][x] === Tile.BOX || map[y][x] === Tile.FALLING_BOX)
+      && map[y + 1][x] === Tile.AIR) {
+    map[y + 1][x] = Tile.FALLING_BOX;
+    map[y][x] = Tile.AIR;
+  } else if (map[y][x] === Tile.FALLING_STONE) {
+    map[y][x] = Tile.STONE;
+  } else if (map[y][x] === Tile.FALLING_BOX) {
+    map[y][x] = Tile.BOX;
+  }
+}
+
 function draw() {
     let g = createGraphics();
     drawMap(g);
@@ -444,12 +460,14 @@ function draw() {
 }
 
 function createGraphics(){
-    let canvas = document.getElementById("GameCanvas") as HTMLCanvasElement;
-    let g = canvas.getContext("2d");
+  let canvas = document.getElementById("GameCanvas") as HTMLCanvasElement;
+  let g = canvas.getContext("2d");
 
-    g.clearRect(0, 0, canvas.width, canvas.height);
-    return g;
+  g.clearRect(0, 0, canvas.width, canvas.height);
+  return g;
 }
+
+
 
 
 
@@ -461,9 +479,10 @@ function drawMap(g:CanvasRenderingContext2D){
     }
 }
 
+
 function drawPlayer(g:CanvasRenderingContext2D){
-    g.fillStyle = "#ff0000";
-    g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  g.fillStyle = "#ff0000";
+  g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 }
 
 function gameLoop() {
