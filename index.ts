@@ -14,7 +14,7 @@ enum RawTile {
     KEY2, LOCK2
 }
 
-interface Tile2 {
+interface Tile {
     isAir(): boolean;
     isFlux(): boolean;
     isUnbreakable(): boolean;
@@ -31,7 +31,7 @@ interface Tile2 {
     draw(g: CanvasRenderingContext2D, x: number, y: number): void;
 }
 
-class Air implements Tile2 {
+class Air implements Tile {
     isAir(): boolean {return true;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -47,7 +47,7 @@ class Air implements Tile2 {
     color(g: CanvasRenderingContext2D) {}
     draw(g: CanvasRenderingContext2D, x: number, y: number) {}
 }
-class Box implements Tile2 {
+class Box implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return true;    }
     isFallingBox(): boolean {return false;}
@@ -66,7 +66,7 @@ class Box implements Tile2 {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
-class FallingBox implements Tile2 {
+class FallingBox implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return true;}
@@ -85,7 +85,7 @@ class FallingBox implements Tile2 {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
-class FallingStone implements Tile2 {
+class FallingStone implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -104,7 +104,7 @@ class FallingStone implements Tile2 {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
-class Flux implements Tile2 {
+class Flux implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -123,7 +123,7 @@ class Flux implements Tile2 {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
-class Key1 implements Tile2 {
+class Key1 implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -142,7 +142,7 @@ class Key1 implements Tile2 {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
-class Key2 implements Tile2 {
+class Key2 implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -161,7 +161,7 @@ class Key2 implements Tile2 {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
-class Lock1 implements Tile2 {
+class Lock1 implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -180,7 +180,7 @@ class Lock1 implements Tile2 {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
-class Lock2 implements Tile2 {
+class Lock2 implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -199,7 +199,7 @@ class Lock2 implements Tile2 {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
-class Player implements Tile2 {
+class Player implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -215,7 +215,7 @@ class Player implements Tile2 {
     color(g: CanvasRenderingContext2D) {}
     draw(g: CanvasRenderingContext2D, x: number, y: number) {}
 }
-class Stone implements Tile2 {
+class Stone implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -234,7 +234,7 @@ class Stone implements Tile2 {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
-class Unbreakable implements Tile2 {
+class Unbreakable implements Tile {
     isAir(): boolean {return false;}
     isBox(): boolean {return false;    }
     isFallingBox(): boolean {return false;}
@@ -308,7 +308,7 @@ let rawMap: RawTile[][] = [
     [2, 4, 1, 1, 1, 9, 0, 2],
     [2, 2, 2, 2, 2, 2, 2, 2],
 ];
-let map: Tile2[][];
+let map: Tile[][];
 
 function transformTile(tile:RawTile){
     switch(tile){
@@ -435,22 +435,6 @@ function updateTile(x: number, y: number) {
     } else if (map[y][x].isFallingBox()) {
         map[y][x] = new Box();
     }
-}
-
-function updateTile(x: number, y: number) {
-  if ((map[y][x] === Tile.STONE || map[y][x] === Tile.FALLING_STONE)
-      && map[y + 1][x] === Tile.AIR) {
-    map[y + 1][x] = Tile.FALLING_STONE;
-    map[y][x] = Tile.AIR;
-  } else if ((map[y][x] === Tile.BOX || map[y][x] === Tile.FALLING_BOX)
-      && map[y + 1][x] === Tile.AIR) {
-    map[y + 1][x] = Tile.FALLING_BOX;
-    map[y][x] = Tile.AIR;
-  } else if (map[y][x] === Tile.FALLING_STONE) {
-    map[y][x] = Tile.STONE;
-  } else if (map[y][x] === Tile.FALLING_BOX) {
-    map[y][x] = Tile.BOX;
-  }
 }
 
 function draw() {
