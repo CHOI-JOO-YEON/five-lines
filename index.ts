@@ -1,4 +1,3 @@
-
 const TILE_SIZE = 30;
 const FPS = 30;
 const SLEEP = 1000 / FPS;
@@ -16,284 +15,1008 @@ enum RawTile {
 
 interface Tile {
     isAir(): boolean;
+
     isFlux(): boolean;
+
     isUnbreakable(): boolean;
+
     isPlayer(): boolean;
-    isStone(): boolean;
-    isFallingStone(): boolean;
-    isBox(): boolean;
-    isFallingBox(): boolean;
+
+    isStony(): boolean;
+
+    isBoxy(): boolean;
+
     isKey1(): boolean;
+
     isKey2(): boolean;
+
     isLock1(): boolean;
+
     isLock2(): boolean;
+
+    isFallingBox(): boolean;
+
+    isFallingStone(): boolean;
+
+    isStone(): boolean;
+
+    isBox(): boolean;
+
+    isEdible(): boolean;
+
+    isPushable(): boolean;
+
     color(g: CanvasRenderingContext2D): void;
+
     draw(g: CanvasRenderingContext2D, x: number, y: number): void;
+
+    moveHorizontal(dx: number): void;
+
+    moveVertical(dy: number): void;
 }
 
-class Air implements Tile {
-    isAir(): boolean {return true;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {}
-    draw(g: CanvasRenderingContext2D, x: number, y: number) {}
+export class Air implements Tile {
+    isBoxy(): boolean {
+        return false;
+    }
+
+    isStony(): boolean {
+        return false;
+    }
+
+    isAir(): boolean {
+        return true;
+    }
+
+    isFlux(): boolean {
+        return false;
+    }
+
+    isKey1(): boolean {
+        return false;
+    }
+
+    isKey2(): boolean {
+        return false;
+    }
+
+    isLock1(): boolean {
+        return false;
+    }
+
+    isLock2(): boolean {
+        return false;
+    }
+
+    isPlayer(): boolean {
+        return false;
+    }
+
+    isUnbreakable(): boolean {
+        return false;
+    }
+
+    isFallingBox(): boolean {
+        return false;
+    }
+
+    isFallingStone(): boolean {
+        return false;
+    }
+
+    isBox(): boolean {
+        return false;
+    }
+
+    isStone(): boolean {
+        return false;
+    }
+
+    isEdible(): boolean {
+        return true;
+    }
+
+    isPushable(): boolean {
+        return false;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+    }
+
+    draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    }
+
+    moveHorizontal(dx: number) {
+        moveToTile(playerx + dx, playery);
+    }
+
+    moveVertical(dy: number) {
+        moveToTile(playerx, playery + dy);
+    }
+
 }
+
 class Box implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return true;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#8b4513";}
+    constructor(private falling: FallingState) {
+    }
+
+    isBoxy(): boolean {
+        return true;
+    }
+
+    isStony(): boolean {
+        return false;
+    }
+
+    isAir(): boolean {
+        return false;
+    }
+
+    isFlux(): boolean {
+        return false;
+    }
+
+    isKey1(): boolean {
+        return false;
+    }
+
+    isKey2(): boolean {
+        return false;
+    }
+
+    isLock1(): boolean {
+        return false;
+    }
+
+    isLock2(): boolean {
+        return false;
+    }
+
+    isPlayer(): boolean {
+        return false;
+    }
+
+    isUnbreakable(): boolean {
+        return false;
+    }
+
+    isFallingBox(): boolean {
+        return this.falling.isFalling();
+    }
+
+    isFallingStone(): boolean {
+        return false;
+    }
+
+    isBox(): boolean {
+        return true;
+    }
+
+    isStone(): boolean {
+        return false;
+    }
+
+    isEdible(): boolean {
+        return false;
+    }
+
+    isPushable(): boolean {
+        return true;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+        g.fillStyle = "#8b4513";
+    }
+
     draw(g: CanvasRenderingContext2D, x: number, y: number) {
         g.fillStyle = "#8b4513";
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
-}
-class FallingBox implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return true;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#8b4513";}
-    draw(g: CanvasRenderingContext2D, x: number, y: number) {
-        g.fillStyle = "#8b4513";
-        g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+    moveHorizontal(dx: number) {
+       this.falling.moveHorizontal(this, dx);
+    }
+
+    moveVertical(dy: number) {
     }
 }
-class FallingStone implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return true;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#0000cc";}
-    draw(g: CanvasRenderingContext2D, x: number, y: number) {
-        g.fillStyle = "#0000cc";
-        g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    }
-}
+
+
 class Flux implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return true;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#ccffcc";}
+    isBoxy(): boolean {
+        return false;
+    }
+
+    isStony(): boolean {
+        return false;
+    }
+
+    isAir(): boolean {
+        return false;
+    }
+
+    isFlux(): boolean {
+        return true;
+    }
+
+    isKey1(): boolean {
+        return false;
+    }
+
+    isKey2(): boolean {
+        return false;
+    }
+
+    isLock1(): boolean {
+        return false;
+    }
+
+    isLock2(): boolean {
+        return false;
+    }
+
+    isPlayer(): boolean {
+        return false;
+    }
+
+    isUnbreakable(): boolean {
+        return false;
+    }
+
+    isFallingBox(): boolean {
+        return false;
+    }
+
+    isFallingStone(): boolean {
+        return false;
+    }
+
+    isBox(): boolean {
+        return false;
+    }
+
+    isStone(): boolean {
+        return false;
+    }
+
+    isEdible(): boolean {
+        return true;
+    }
+
+    isPushable(): boolean {
+        return false;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+        g.fillStyle = "#ccffcc";
+    }
+
     draw(g: CanvasRenderingContext2D, x: number, y: number) {
         g.fillStyle = "#ccffcc";
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
+
+    moveHorizontal(dx: number) {
+        moveToTile(playerx + dx, playery);
+    }
+
+    moveVertical(dy: number) {
+        moveToTile(playerx, playery + dy);
+    }
 }
+
 class Key1 implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return true;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#ffcc00";}
+    isBoxy(): boolean {
+        return false;
+    }
+
+    isStony(): boolean {
+        return false;
+    }
+
+    isAir(): boolean {
+        return false;
+    }
+
+    isFlux(): boolean {
+        return false;
+    }
+
+    isKey1(): boolean {
+        return true;
+    }
+
+    isKey2(): boolean {
+        return false;
+    }
+
+    isLock1(): boolean {
+        return false;
+    }
+
+    isLock2(): boolean {
+        return false;
+    }
+
+    isPlayer(): boolean {
+        return false;
+    }
+
+    isUnbreakable(): boolean {
+        return false;
+    }
+
+    isFallingBox(): boolean {
+        return false;
+    }
+
+    isFallingStone(): boolean {
+        return false;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+        g.fillStyle = "#ffcc00";
+    }
+
+    isBox(): boolean {
+        return false;
+    }
+
+    isStone(): boolean {
+        return false;
+    }
+
+    isEdible(): boolean {
+        return false;
+    }
+
+    isPushable(): boolean {
+        return false;
+    }
+
     draw(g: CanvasRenderingContext2D, x: number, y: number) {
         g.fillStyle = "#ffcc00";
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
+
+    moveHorizontal(dx: number) {
+        removeLock1();
+        moveToTile(playerx + dx, playery);
+    }
+
+    moveVertical(dy: number) {
+        removeLock1();
+        moveToTile(playerx, playery + dy);
+    }
 }
+
 class Key2 implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return true;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#00ccff";}
+    isBoxy(): boolean {
+        return false;
+    }
+
+    isStony(): boolean {
+        return false;
+    }
+
+    isAir(): boolean {
+        return false;
+    }
+
+    isFlux(): boolean {
+        return false;
+    }
+
+    isKey1(): boolean {
+        return false;
+    }
+
+    isKey2(): boolean {
+        return true;
+    }
+
+    isLock1(): boolean {
+        return false;
+    }
+
+    isLock2(): boolean {
+        return false;
+    }
+
+    isPlayer(): boolean {
+        return false;
+    }
+
+    isUnbreakable(): boolean {
+        return false;
+    }
+
+    isFallingBox(): boolean {
+        return false;
+    }
+
+    isFallingStone(): boolean {
+        return false;
+    }
+
+    isBox(): boolean {
+        return false;
+    }
+
+    isStone(): boolean {
+        return false;
+    }
+
+    isEdible(): boolean {
+        return false;
+    }
+
+    isPushable(): boolean {
+        return false;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+        g.fillStyle = "#00ccff";
+    }
+
     draw(g: CanvasRenderingContext2D, x: number, y: number) {
         g.fillStyle = "#00ccff";
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
+
+    moveHorizontal(dx: number) {
+        removeLock2();
+        moveToTile(playerx + dx, playery);
+    }
+
+    moveVertical(dy: number) {
+        removeLock2();
+        moveToTile(playerx, playery + dy);
+    }
 }
+
 class Lock1 implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return true;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#ffcc00";}
+    isBoxy(): boolean {
+        return false;
+    }
+
+    isStony(): boolean {
+        return false;
+    }
+
+    isAir(): boolean {
+        return false;
+    }
+
+    isFlux(): boolean {
+        return false;
+    }
+
+    isKey1(): boolean {
+        return false;
+    }
+
+    isKey2(): boolean {
+        return false;
+    }
+
+    isLock1(): boolean {
+        return true;
+    }
+
+    isLock2(): boolean {
+        return false;
+    }
+
+    isPlayer(): boolean {
+        return false;
+    }
+
+    isUnbreakable(): boolean {
+        return false;
+    }
+
+    isFallingBox(): boolean {
+        return false;
+    }
+
+    isFallingStone(): boolean {
+        return false;
+    }
+
+    isBox(): boolean {
+        return false;
+    }
+
+    isStone(): boolean {
+        return false;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+        g.fillStyle = "#ffcc00";
+    }
+
+    isEdible(): boolean {
+        return false;
+    }
+
+    isPushable(): boolean {
+        return false;
+    }
+
     draw(g: CanvasRenderingContext2D, x: number, y: number) {
         g.fillStyle = "#ffcc00";
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
+
+    moveHorizontal(dx: number) {
+
+    }
+
+    moveVertical(dy: number) {
+
+    }
 }
+
 class Lock2 implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return true;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#00ccff";}
+    isBoxy(): boolean {
+        return false;
+    }
+
+    isStony(): boolean {
+        return false;
+    }
+
+    isAir(): boolean {
+        return false;
+    }
+
+    isFlux(): boolean {
+        return false;
+    }
+
+    isKey1(): boolean {
+        return false;
+    }
+
+    isKey2(): boolean {
+        return false;
+    }
+
+    isLock1(): boolean {
+        return false;
+    }
+
+    isLock2(): boolean {
+        return true;
+    }
+
+    isPlayer(): boolean {
+        return false;
+    }
+
+    isUnbreakable(): boolean {
+        return false;
+    }
+
+    isFallingBox(): boolean {
+        return false;
+    }
+
+    isFallingStone(): boolean {
+        return false;
+    }
+
+    isBox(): boolean {
+        return false;
+    }
+
+    isStone(): boolean {
+        return false;
+    }
+
+    isEdible(): boolean {
+        return false;
+    }
+
+    isPushable(): boolean {
+        return false;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+        g.fillStyle = "#00ccff";
+    }
+
     draw(g: CanvasRenderingContext2D, x: number, y: number) {
         g.fillStyle = "#00ccff";
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
+
+    moveHorizontal(dx: number) {
+
+    }
+
+    moveVertical(dy: number) {
+
+    }
 }
+
 class Player implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return true;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {}
-    draw(g: CanvasRenderingContext2D, x: number, y: number) {}
+    isBoxy(): boolean {
+        return false;
+    }
+
+    isStony(): boolean {
+        return false;
+    }
+
+    isAir(): boolean {
+        return false;
+    }
+
+    isFlux(): boolean {
+        return false;
+    }
+
+    isKey1(): boolean {
+        return false;
+    }
+
+    isKey2(): boolean {
+        return false;
+    }
+
+    isLock1(): boolean {
+        return false;
+    }
+
+    isLock2(): boolean {
+        return false;
+    }
+
+    isPlayer(): boolean {
+        return true;
+    }
+
+    isUnbreakable(): boolean {
+        return false;
+    }
+
+    isFallingBox(): boolean {
+        return false;
+    }
+
+    isFallingStone(): boolean {
+        return false;
+    }
+
+    isBox(): boolean {
+        return false;
+    }
+
+    isStone(): boolean {
+        return false;
+    }
+
+    isEdible(): boolean {
+        return false;
+    }
+
+    isPushable(): boolean {
+        return false;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+    }
+
+    draw(g: CanvasRenderingContext2D, x: number, y: number) {
+    }
+
+    moveHorizontal(dx: number) {
+
+    }
+
+    moveVertical(dy: number) {
+
+    }
 }
+
+interface FallingState {
+    isFalling(): boolean;
+    moveHorizontal(tile: Tile, dx: number): void;
+}
+
+class Falling implements FallingState {
+    isFalling(): boolean {
+        return true;
+    }
+    moveHorizontal(tile: Tile, dx: number) {
+
+    }
+}
+
+class Resting implements FallingState {
+    isFalling(): boolean {
+        return false;
+    }
+
+    moveHorizontal(tile: Tile, dx: number) {
+        if (map[playery][playerx + dx + dx].isAir()
+            && map[playery + 1][playerx + dx].isAir()) {
+            map[playery][playerx + dx + dx] = tile;
+            moveToTile(playerx + dx, playery);
+        }
+    }
+}
+
 class Stone implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return true;}
-    isUnbreakable(): boolean {return false;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#0000cc";}
+
+    constructor(private falling: FallingState) {
+    }
+
+    isBoxy(): boolean {
+        return false;
+    }
+
+    isStony(): boolean {
+        return true;
+    }
+
+    isAir(): boolean {
+        return false;
+    }
+
+    isFlux(): boolean {
+        return false;
+    }
+
+    isKey1(): boolean {
+        return false;
+    }
+
+    isKey2(): boolean {
+        return false;
+    }
+
+    isLock1(): boolean {
+        return false;
+    }
+
+    isLock2(): boolean {
+        return false;
+    }
+
+    isPlayer(): boolean {
+        return false;
+    }
+
+    isUnbreakable(): boolean {
+        return false;
+    }
+
+    isFallingBox(): boolean {
+        return false;
+    }
+
+    isFallingStone(): boolean {
+        return this.falling.isFalling();
+    }
+
+    isBox(): boolean {
+        return false;
+    }
+
+    isStone(): boolean {
+        return true;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+        g.fillStyle = "#0000cc";
+    }
+
+    isEdible(): boolean {
+        return false;
+    }
+
+    isPushable(): boolean {
+        return true;
+    }
+
     draw(g: CanvasRenderingContext2D, x: number, y: number) {
         g.fillStyle = "#0000cc";
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
+
+    moveHorizontal(dx: number) {
+        this.falling.moveHorizontal(this, dx);
+    }
+
+    moveVertical(dy: number) {
+
+    }
 }
+
 class Unbreakable implements Tile {
-    isAir(): boolean {return false;}
-    isBox(): boolean {return false;    }
-    isFallingBox(): boolean {return false;}
-    isFallingStone(): boolean {return false;}
-    isFlux(): boolean {return false;}
-    isKey1(): boolean {return false;}
-    isKey2(): boolean {return false;}
-    isLock1(): boolean {return false;}
-    isLock2(): boolean {return false;}
-    isPlayer(): boolean {return false;}
-    isStone(): boolean {return false;}
-    isUnbreakable(): boolean {return true;}
-    color(g: CanvasRenderingContext2D) {g.fillStyle = "#999999";}
+    isBoxy(): boolean {
+        return false;
+    }
+
+    isStony(): boolean {
+        return false;
+    }
+
+    isAir(): boolean {
+        return false;
+    }
+
+    isFlux(): boolean {
+        return false;
+    }
+
+    isKey1(): boolean {
+        return false;
+    }
+
+    isKey2(): boolean {
+        return false;
+    }
+
+    isLock1(): boolean {
+        return false;
+    }
+
+    isLock2(): boolean {
+        return false;
+    }
+
+    isPlayer(): boolean {
+        return false;
+    }
+
+    isUnbreakable(): boolean {
+        return true;
+    }
+
+    isFallingBox(): boolean {
+        return false;
+    }
+
+    isFallingStone(): boolean {
+        return false;
+    }
+
+    isBox(): boolean {
+        return false;
+    }
+
+    isStone(): boolean {
+        return false;
+    }
+
+    color(g: CanvasRenderingContext2D) {
+        g.fillStyle = "#999999";
+    }
+
+    isEdible(): boolean {
+        return false;
+    }
+
+    isPushable(): boolean {
+        return false;
+    }
+
     draw(g: CanvasRenderingContext2D, x: number, y: number) {
         g.fillStyle = "#999999";
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
+
+    moveHorizontal(dx: number) {
+    }
+
+    moveVertical(dy: number) {
+
+    }
 }
 
-
-enum RawInput {
-    UP, DOWN, LEFT, RIGHT
-}
 interface Input {
     isRight(): boolean;
+
     isLeft(): boolean;
+
     isUp(): boolean;
+
     isDown(): boolean;
 
     handle(): void
 }
-class Right implements Input{
-    isRight() {return true}
-    isLeft() {return false}
-    isUp() {return false}
-    isDown() {return false}
-    handle() { moveHorizontal(1); }
+
+class Right implements Input {
+    isRight() {
+        return true
+    }
+
+    isLeft() {
+        return false
+    }
+
+    isUp() {
+        return false
+    }
+
+    isDown() {
+        return false
+    }
+
+    handle() {
+        moveHorizontal(1);
+    }
 
 }
-class Left implements Input{
-    isRight() {return false}
-    isLeft() {return true}
-    isUp() {return false}
-    isDown() {return false}
-    handle() { moveHorizontal(-1); }
+
+class Left implements Input {
+    isRight() {
+        return false
+    }
+
+    isLeft() {
+        return true
+    }
+
+    isUp() {
+        return false
+    }
+
+    isDown() {
+        return false
+    }
+
+    handle() {
+        moveHorizontal(-1);
+    }
 }
-class Up implements Input{
-    isRight() {return false}
-    isLeft() {return false}
-    isUp() {return true}
-    isDown() {return false}
-    handle() { moveVertical(-1); }
+
+class Up implements Input {
+    isRight() {
+        return false
+    }
+
+    isLeft() {
+        return false
+    }
+
+    isUp() {
+        return true
+    }
+
+    isDown() {
+        return false
+    }
+
+    handle() {
+        moveVertical(-1);
+    }
 }
-class Down implements Input{
-    isRight() {return false}
-    isLeft() {return false}
-    isUp() {return false}
-    isDown() {return true}
-    handle() { moveVertical(1); }
+
+class Down implements Input {
+    isRight() {
+        return false
+    }
+
+    isLeft() {
+        return false
+    }
+
+    isUp() {
+        return false
+    }
+
+    isDown() {
+        return true
+    }
+
+    handle() {
+        moveVertical(1);
+    }
 }
 
 let playerx = 1;
@@ -310,27 +1033,39 @@ let rawMap: RawTile[][] = [
 ];
 let map: Tile[][];
 
-function transformTile(tile:RawTile){
-    switch(tile){
-        case RawTile.AIR: return new Air();
-        case RawTile.BOX: return new Box();
-        case RawTile.KEY1: return new Key1();
-        case RawTile.KEY2: return new Key2();
-        case RawTile.FALLING_BOX: return new FallingBox();
-        case RawTile.FLUX: return new Flux();
-        case RawTile.FALLING_STONE: return new FallingStone();
-        case RawTile.LOCK1: return new Lock1();
-        case RawTile.LOCK2: return new Lock2();
-        case RawTile.PLAYER: return new Player();
-        case RawTile.STONE: return new Stone();
-        case RawTile.UNBREAKABLE: return new Unbreakable();
+function transformTile(tile: RawTile) {
+    switch (tile) {
+        case RawTile.AIR:
+            return new Air();
+        case RawTile.BOX:
+            return new Box(new Falling());
+        case RawTile.KEY1:
+            return new Key1();
+        case RawTile.KEY2:
+            return new Key2();
+        case RawTile.FALLING_BOX:
+            return new Box(new Resting());
+        case RawTile.FLUX:
+            return new Flux();
+        case RawTile.FALLING_STONE:
+            return new Stone(new Falling());
+        case RawTile.LOCK1:
+            return new Lock1();
+        case RawTile.LOCK2:
+            return new Lock2();
+        case RawTile.PLAYER:
+            return new Player();
+        case RawTile.STONE:
+            return new Stone(new Resting());
+        case RawTile.UNBREAKABLE:
+            return new Unbreakable();
 
     }
 }
 
 function transformMap() {
     map = new Array(rawMap.length);
-    for(let y = 0; y < rawMap.length; y++) {
+    for (let y = 0; y < rawMap.length; y++) {
         map[y] = new Array(rawMap[y].length);
         for (let x = 0; x < rawMap[y].length; x++) {
             map[y][x] = transformTile(rawMap[y][x]);
@@ -349,6 +1084,7 @@ function removeLock2() {
         }
     }
 }
+
 function removeLock1() {
     for (let y = 0; y < map.length; y++) {
         for (let x = 0; x < map[y].length; x++) {
@@ -368,42 +1104,17 @@ function moveToTile(newx: number, newy: number) {
 }
 
 function moveHorizontal(dx: number) {
-    if (map[playery][playerx + dx].isFlux()
-        || map[playery][playerx + dx].isAir()) {
-        moveToTile(playerx + dx, playery);
-    } else if ((map[playery][playerx + dx].isStone()
-            || map[playery][playerx + dx].isBox())
-        && map[playery][playerx + dx + dx].isAir()
-        && map[playery + 1][playerx + dx].isAir()) {
-        map[playery][playerx + dx + dx] = map[playery][playerx + dx];
-        moveToTile(playerx + dx, playery);
-    } else if (map[playery][playerx + dx].isKey1()) {
-        removeLock1();
-        moveToTile(playerx + dx, playery);
-    } else if (map[playery][playerx + dx].isKey2()) {
-        removeLock2();
-        moveToTile(playerx + dx, playery);
-    }
+    map[playery][playerx + dx].moveHorizontal(dx);
 }
 
 function moveVertical(dy: number) {
-    if (map[playery + dy][playerx].isFlux()
-        || map[playery + dy][playerx].isAir()) {
-        moveToTile(playerx, playery + dy);
-    } else if (map[playery + dy][playerx].isKey1()) {
-        removeLock1();
-        moveToTile(playerx, playery + dy);
-    } else if (map[playery + dy][playerx].isKey2()) {
-        removeLock2();
-        moveToTile(playerx, playery + dy);
-    }
+    map[playery + dy][playerx].moveVertical(dy);
 }
 
 function update() {
-  handleInputs();
-  updateMap();
+    handleInputs();
+    updateMap();
 }
-
 
 
 function handleInputs() {
@@ -422,18 +1133,18 @@ function updateMap() {
 }
 
 function updateTile(x: number, y: number) {
-    if ((map[y][x].isStone() || map[y][x].isFallingStone())
+    if ((map[y][x].isStony())
         && map[y + 1][x].isAir()) {
-        map[y + 1][x] = new FallingStone();
+        map[y + 1][x] = new Stone(new Falling());
         map[y][x] = new Air();
-    } else if ((map[y][x].isBox() || map[y][x].isFallingBox())
+    } else if ((map[y][x].isBoxy())
         && map[y + 1][x].isAir()) {
-        map[y + 1][x].isFallingBox();
+        map[y + 1][x] = new Box(new Resting())
         map[y][x] = new Air();
     } else if (map[y][x].isFallingStone()) {
-        map[y][x] = new Stone();
+        map[y][x] = new Stone(new Resting());
     } else if (map[y][x].isFallingBox()) {
-        map[y][x] = new Box();
+        map[y][x] = new Box(new Falling());
     }
 }
 
@@ -443,19 +1154,16 @@ function draw() {
     drawPlayer(g);
 }
 
-function createGraphics(){
-  let canvas = document.getElementById("GameCanvas") as HTMLCanvasElement;
-  let g = canvas.getContext("2d");
+function createGraphics() {
+    let canvas = document.getElementById("GameCanvas") as HTMLCanvasElement;
+    let g = canvas.getContext("2d");
 
-  g.clearRect(0, 0, canvas.width, canvas.height);
-  return g;
+    g.clearRect(0, 0, canvas.width, canvas.height);
+    return g;
 }
 
 
-
-
-
-function drawMap(g:CanvasRenderingContext2D){
+function drawMap(g: CanvasRenderingContext2D) {
     for (let y = 0; y < map.length; y++) {
         for (let x = 0; x < map[y].length; x++) {
             map[y][x].draw(g, x, y);
@@ -464,9 +1172,9 @@ function drawMap(g:CanvasRenderingContext2D){
 }
 
 
-function drawPlayer(g:CanvasRenderingContext2D){
-  g.fillStyle = "#ff0000";
-  g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+function drawPlayer(g: CanvasRenderingContext2D) {
+    g.fillStyle = "#ff0000";
+    g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 }
 
 function gameLoop() {
