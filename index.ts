@@ -16,11 +16,7 @@ enum RawTile {
 class Map {
     private map: Tile[][];
 
-    setTile(x: number, y: number, tile: Tile) {
-        this.map[y][x] = tile;
-    }
-
-    transform() {
+    constructor() {
         this.map = new Array(rawMap.length);
         for (let y = 0; y < rawMap.length; y++) {
             this.map[y] = new Array(rawMap[y].length);
@@ -29,6 +25,11 @@ class Map {
             }
         }
     }
+
+    setTile(x: number, y: number, tile: Tile) {
+        this.map[y][x] = tile;
+    }
+
 
     update() {
         for (let y = this.map.length - 1; y >= 0; y--) {
@@ -770,7 +771,6 @@ function gameLoop(map: Map,) {
 
 window.onload = () => {
     let map = new Map();
-    map.transform();
     gameLoop(map);
 }
 
